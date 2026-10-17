@@ -20,7 +20,7 @@
             <div>
                 <p class="eyebrow">SECURE CHECKOUT</p>
                 <h1>Complete your order</h1>
-                <p class="subtext">Choose a payment method below. The same OrderService handles every option.</p>
+                <p class="subtext">Choose an option below and watch the Dependency Injection update live.</p>
             </div>
             <div class="steps" aria-label="Checkout progress">
                 <span class="step muted">Cart</span>
@@ -142,12 +142,47 @@
                     <span>USD $49.99</span>
                 </div>
 
-                <div class="di-card">
-                    <p class="eyebrow">WHAT THE DEMO SHOWS</p>
-                    <div class="flow-item"><span>1</span><p>You choose a payment method.</p></div>
-                    <div class="flow-item"><span>2</span><p>That payment object is created outside OrderService.</p></div>
-                    <div class="flow-item"><span>3</span><p>The object is injected into OrderService.</p></div>
-                    <div class="flow-item"><span>4</span><p>OrderService uses it without changing its own code.</p></div>
+                <div class="di-live-card">
+                    <div class="di-live-header">
+                        <div>
+                            <p class="eyebrow">LIVE DEPENDENCY INJECTION</p>
+                            <h3>What is happening behind the checkout?</h3>
+                        </div>
+                        <span class="live-pill">LIVE</span>
+                    </div>
+
+                    <div class="selected-dependency">
+                        <span>Selected dependency</span>
+                        <strong id="selected-dependency">CurrentPayment</strong>
+                    </div>
+
+                    <div class="di-flow">
+                        <div class="flow-box dependency-box">
+                            <small>Dependency</small>
+                            <strong id="dependency-name">CurrentPayment</strong>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box service-box">
+                            <small>Injected into</small>
+                            <strong>OrderService</strong>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box checkout-box">
+                            <small>Used in</small>
+                            <strong>checkout()</strong>
+                        </div>
+                    </div>
+
+                    <div class="code-label">Behind the scenes</div>
+                    <pre class="di-code"><code id="injection-code"></code></pre>
+
+                    <div class="di-explanation" id="di-explanation"></div>
+
+                    <div class="same-service-note">
+                        <strong>OrderService stays the same.</strong>
+                        <span>Only the injected object changes.</span>
+                    </div>
+                </div>
                 </div>
             </aside>
         </div>
