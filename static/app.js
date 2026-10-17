@@ -1,34 +1,21 @@
-const stepTabs = document.querySelectorAll(".step-tab");
-const panels = document.querySelectorAll(".step-panel");
-const nextButtons = document.querySelectorAll(".next-button[data-next]");
-const paymentChoices = document.querySelectorAll(".payment-choice");
+const methodTabs = document.querySelectorAll(".method-tab");
+const creditFields = document.getElementById("credit-fields");
+const paypalFields = document.getElementById("paypal-fields");
+const appleFields = document.getElementById("apple-fields");
+const fakeFields = document.getElementById("fake-fields");
 
-const selectedClassLarge = document.getElementById("selected-class-large");
-const stageDependency = document.getElementById("stage-dependency");
-const constructorCode = document.getElementById("constructor-code");
-const checkoutMethodName = document.getElementById("checkout-method-name");
-const runCreate = document.getElementById("run-create");
-const runResult = document.getElementById("run-result");
-
+const runButton = document.getElementById("run-checkout");
+const resultBox = document.getElementById("run-result");
 const liveDependency = document.getElementById("live-dependency");
+const createLine = document.getElementById("create-line");
 const liveCode = document.getElementById("live-code");
 const logLines = document.getElementById("log-lines");
+const clearLog = document.getElementById("clear-log");
 
-const runCheckoutButton = document.getElementById("run-checkout");
-const runFakeTestButton = document.getElementById("run-fake-test");
-const fakeTestResult = document.getElementById("fake-test-result");
-const useApplePayButton = document.getElementById("use-apple-pay");
-
-const resetDemoButton = document.getElementById("reset-demo");
-const restartButton = document.getElementById("restart-walkthrough");
-const clearLogButton = document.getElementById("clear-log");
-
-let currentStep = 1;
 let currentMethod = "credit_card";
 
 const methods = {
     credit_card: {
-        label: "Credit Card",
         className: "CreditCardPayment",
         create: 'CreditCardPayment("1234")',
         payload: {
@@ -37,7 +24,6 @@ const methods = {
         }
     },
     paypal: {
-        label: "PayPal",
         className: "PayPalPayment",
         create: 'PayPalPayment("pampa@example.com")',
         payload: {
@@ -46,7 +32,6 @@ const methods = {
         }
     },
     apple_pay: {
-        label: "Apple Pay",
         className: "ApplePayPayment",
         create: 'ApplePayPayment("iPhone")',
         payload: {
@@ -55,7 +40,6 @@ const methods = {
         }
     },
     fake: {
-        label: "FakePayment",
         className: "FakePayment",
         create: "FakePayment()",
         payload: {
@@ -64,75 +48,45 @@ const methods = {
     }
 };
 
-function addLog(type, message) {
+function addLog(message) {
     const line = document.createElement("div");
-    line.innerHTML = "<span>" + type + "</span>" + message;
+    line.textContent = message;
     logLines.appendChild(line);
     logLines.scrollTop = logLines.scrollHeight;
 }
 
-function codeFor(method) {
-    const info = methods[method];
-    return (
-        "payment = " + info.create + "\n" +
-        "service = OrderService(payment)\n" +
-        "service.checkout(order)"
-    );
+function showFields(method) {
+    creditFields.classList.toggle("hidden", method !== "credit_card");
+    paypalFields.classList.toggle("hidden", method !== "paypal");
+    appleFields.classList.toggle("hidden", method !== "apple_pay");
+    fakeFields.classList.toggle("hidden", method !== "fake");
 }
 
-function setStep(step) {
-    currentStep = Number(step);
-
-    stepTabs.forEach(tab => {
-        tab.classList.toggle("active", Number(tab.dataset.step) === currentStep);
-    });
-
-    panels.forEach(panel => {
-        panel.classList.toggle("active", Number(panel.dataset.panel) === currentStep);
-    });
-
-    const labels = {
-        1: "Showing tight coupling problem.",
-        2: "Choosing a dependency outside OrderService.",
-        3: "Showing constructor injection.",
-        4: "Ready to execute checkout.",
-        5: "Showing testing and extension benefits."
-    };
-
-    addLog("STEP " + currentStep, labels[currentStep]);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function setMethod(method, shouldLog = true) {
+function selectMethod(method) {
     currentMethod = method;
     const info = methods[method];
 
-    paymentChoices.forEach(choice => {
-        choice.classList.toggle("selected", choice.dataset.method === method);
+    methodTabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.method === method);
     });
 
-    selectedClassLarge.textContent = info.className;
-    stageDependency.textContent = info.className;
-    constructorCode.textContent =
-        "payment = " + info.create + "\n" +
-        "service = OrderService(payment)";
-
-    checkoutMethodName.textContent = info.className;
-    runCreate.textContent = info.className;
-    runResult.textContent = "Waiting to run...";
+    showFields(method);
 
     liveDependency.textContent = info.className;
-    liveCode.textContent = codeFor(method);
+    createLine.textContent = info.create;
+    liveCode.textContent =
+        "payment = " + info.create + "\n" +
+        "service = OrderService(payment)\n" +
+        "service.checkout(order)";
 
-    runCheckoutButton.textContent = "Run checkout with " + info.className;
+    resultBox.textContent = "Ready.";
+    resultBox.className = "result-box";
 
-    if (shouldLog) {
-        addLog("SELECT", info.className + " chosen outside OrderService.");
-    }
+    addLog("Selected " + info.className + ".");
 }
 
-async function executeCheckout(method) {
-    const info = methods[method];
+async function runCheckout() {
+    const info = methods[currentMethod];
 
     const payload = {
         order_id: "A1001",
@@ -140,106 +94,50 @@ async function executeCheckout(method) {
         ...info.payload
     };
 
-    const response = await fetch("/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
+    runButton.disabled = true;
+    runButton.textContent = "Processing...";
 
-    const data = await response.json();
-
-    if (!response.ok || !data.ok) {
-        throw new Error(data.message || "Checkout failed.");
-    }
-
-    return data;
-}
-
-stepTabs.forEach(tab => {
-    tab.addEventListener("click", () => setStep(tab.dataset.step));
-});
-
-nextButtons.forEach(button => {
-    button.addEventListener("click", () => setStep(button.dataset.next));
-});
-
-paymentChoices.forEach(choice => {
-    choice.addEventListener("click", () => setMethod(choice.dataset.method));
-});
-
-runCheckoutButton.addEventListener("click", async () => {
-    const info = methods[currentMethod];
-
-    runCheckoutButton.disabled = true;
-    runCheckoutButton.textContent = "Running...";
-
-    addLog("CREATE", info.className + " object created outside OrderService.");
-    addLog("INJECT", info.className + " passed into OrderService(payment).");
-    addLog("CALL", "OrderService calls payment_processor.pay(49.99).");
+    addLog("Created " + info.className + " outside OrderService.");
+    addLog("Injected with OrderService(payment).");
+    addLog("Calling checkout().");
 
     try {
-        const data = await executeCheckout(currentMethod);
+        const response = await fetch("/checkout", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
 
-        runResult.textContent = data.message;
-        addLog("RESULT", data.message + " using " + data.injected_class + ".");
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || "Checkout failed.");
+        }
+
+        resultBox.textContent =
+            data.message +
+            (data.test_detail ? " " + data.test_detail : "");
+
+        resultBox.className = "result-box success";
+        addLog("Completed with " + data.injected_class + ".");
     } catch (error) {
-        runResult.textContent = error.message;
-        addLog("ERROR", error.message);
+        resultBox.textContent = error.message;
+        resultBox.className = "result-box error";
+        addLog("Error: " + error.message);
     } finally {
-        runCheckoutButton.disabled = false;
-        runCheckoutButton.textContent = "Run checkout with " + info.className;
+        runButton.disabled = false;
+        runButton.textContent = "Pay $49.99";
     }
-});
-
-runFakeTestButton.addEventListener("click", async () => {
-    fakeTestResult.textContent = "Running test...";
-    fakeTestResult.classList.remove("pass");
-
-    addLog("TEST", "Injecting FakePayment instead of a real provider.");
-
-    try {
-        const data = await executeCheckout("fake");
-        fakeTestResult.textContent =
-            "PASS — " + (data.test_detail || "FakePayment completed the test.");
-        fakeTestResult.classList.add("pass");
-        addLog("PASS", data.test_detail || "FakePayment test passed.");
-    } catch (error) {
-        fakeTestResult.textContent = "Test failed — " + error.message;
-        addLog("ERROR", error.message);
-    }
-});
-
-useApplePayButton.addEventListener("click", () => {
-    setMethod("apple_pay");
-    addLog("EXTEND", "ApplePayPayment added without changing OrderService.");
-    setStep(4);
-});
-
-clearLogButton.addEventListener("click", () => {
-    logLines.innerHTML = "";
-    addLog("READY", "Log cleared.");
-});
-
-function resetDemo() {
-    logLines.innerHTML = "";
-    fakeTestResult.textContent = "Not run yet";
-    fakeTestResult.classList.remove("pass");
-    setMethod("credit_card", false);
-    currentStep = 1;
-
-    stepTabs.forEach(tab => {
-        tab.classList.toggle("active", Number(tab.dataset.step) === 1);
-    });
-
-    panels.forEach(panel => {
-        panel.classList.toggle("active", Number(panel.dataset.panel) === 1);
-    });
-
-    addLog("READY", "Demo reset with CreditCardPayment.");
-    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-resetDemoButton.addEventListener("click", resetDemo);
-restartButton.addEventListener("click", resetDemo);
+methodTabs.forEach(tab => {
+    tab.addEventListener("click", () => selectMethod(tab.dataset.method));
+});
 
-setMethod("credit_card", false);
+runButton.addEventListener("click", runCheckout);
+
+clearLog.addEventListener("click", () => {
+    logLines.innerHTML = "<div>Ready.</div>";
+});
+
+selectMethod("credit_card");
