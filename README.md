@@ -12,14 +12,29 @@ The program shows how the same `OrderService` can work with different payment me
 - `payment.py` - contains the payment classes
 - `order_service.py` - contains the order and checkout logic
 - `tightly_coupled_example.py` - shows the version without Dependency Injection
-- `main.py` - runs the example
+- `main.py` - runs the console example
+- `ui.py` - runs a simple checkout user interface for the presentation
 - `tests/` - contains a unit test
 
-## Run the program
+## Run the console example
 
 ```bash
 python main.py
 ```
+
+## Run the UI demo
+
+```bash
+python ui.py
+```
+
+The UI lets you choose between:
+
+- Credit Card
+- PayPal
+- FakePayment
+
+The important part is that the same `OrderService` is used each time. Only the payment object that gets injected changes.
 
 ## Run the test
 
