@@ -7,8 +7,40 @@ const successMessage = document.getElementById("success-message");
 const injectedClass = document.getElementById("injected-class");
 const tryAgain = document.getElementById("try-again");
 
+const selectedDependency = document.getElementById("selected-dependency");
+const dependencyName = document.getElementById("dependency-name");
+const injectionCode = document.getElementById("injection-code");
+const diExplanation = document.getElementById("di-explanation");
+
+const dependencyDetails = {
+    credit_card: {
+        className: "CreditCardPayment",
+        code: 'payment = CreditCardPayment("1234")\nservice = OrderService(payment)\nservice.checkout(order)',
+        explanation: "CreditCardPayment is created outside OrderService and passed into its constructor."
+    },
+    paypal: {
+        className: "PayPalPayment",
+        code: 'payment = PayPalPayment("pampa@example.com")\nservice = OrderService(payment)\nservice.checkout(order)',
+        explanation: "PayPalPayment is injected instead. OrderService does not need to be rewritten."
+    },
+    fake: {
+        className: "FakePayment",
+        code: 'payment = FakePayment()\nservice = OrderService(payment)\nservice.checkout(order)',
+        explanation: "FakePayment is injected for testing, so checkout can be tested without a real payment provider."
+    }
+};
+
 function selectedMethod() {
     return document.querySelector('input[name="payment"]:checked').value;
+}
+
+function updateDependencyPanel(method) {
+    const details = dependencyDetails[method];
+
+    selectedDependency.textContent = details.className;
+    dependencyName.textContent = details.className;
+    injectionCode.textContent = details.code;
+    diExplanation.textContent = details.explanation;
 }
 
 function updatePaymentUI() {
@@ -21,6 +53,8 @@ function updatePaymentUI() {
 
     creditFields.classList.toggle("hidden", method !== "credit_card");
     paypalFields.classList.toggle("hidden", method !== "paypal");
+
+    updateDependencyPanel(method);
 }
 
 paymentOptions.forEach(option => {
