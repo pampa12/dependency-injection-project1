@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackrabbits Rule Shop | Without Dependency Injection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">J</div>
+            <div>
+                <strong>Jackrabbits Rule Shop</strong>
+                <span>SE 340 · Without Dependency Injection</span>
+            </div>
+        </div>
+        <a class="ghost-link" href="/">Back to comparison</a>
+    </header>
+
+    <main class="app-shell">
+        <section class="hero">
+            <p class="eyebrow">DEMO A · WITHOUT DEPENDENCY INJECTION</p>
+            <h1>Same checkout, but the payment method is locked inside the service</h1>
+            <p>
+                This version uses the tightly coupled design. OrderService creates
+                CreditCardPayment by itself, so the service cannot simply accept PayPal,
+                Apple Pay, or a fake test payment.
+            </p>
+        </section>
+
+        <div class="demo-layout">
+            <section class="demo-stage">
+                <div class="stage-header">
+                    <div>
+                        <p class="eyebrow">TIGHTLY COUPLED VERSION</p>
+                        <h2>Checkout is fixed to Credit Card</h2>
+                    </div>
+                    <span class="status-badge danger">No DI</span>
+                </div>
+
+                <div class="checkout-demo without-di-demo">
+                    <div class="store-card">
+                        <div class="store-heading">
+                            <div>
+                                <small>JACKRABBITS RULE SHOP</small>
+                                <h3>Checkout</h3>
+                            </div>
+                            <span>Order #A1001</span>
+                        </div>
+
+                        <div class="order-item">
+                            <div class="product-thumb">JR</div>
+                            <div>
+                                <strong>Jackrabbits Hoodie</strong>
+                                <span>Demo item · Qty 1</span>
+                            </div>
+                            <strong>$49.99</strong>
+                        </div>
+
+                        <div class="fixed-payment-box">
+                            <span>Payment method</span>
+                            <strong>Credit Card only</strong>
+                            <small>Created inside TightlyCoupledOrderService</small>
+                        </div>
+
+                        <button id="run-tight-checkout" class="pay-button">
+                            Run checkout
+                        </button>
+
+                        <button id="try-paypal-tight" class="secondary-button wide-button">
+                            Try to switch to PayPal
+                        </button>
+
+                        <div id="tight-result" class="comparison-result">
+                            Waiting to run...
+                        </div>
+                    </div>
+
+                    <div class="execution-panel">
+                        <p class="eyebrow">WHAT HAPPENS INSIDE THE SERVICE</p>
+
+                        <div class="execution-line">
+                            <span>1</span>
+                            <div>
+                                <strong>Create OrderService</strong>
+                                <small>TightlyCoupledOrderService()</small>
+                            </div>
+                        </div>
+
+                        <div class="execution-line">
+                            <span>2</span>
+                            <div>
+                                <strong>Service creates its own dependency</strong>
+                                <small>self.payment_processor = CreditCardPayment()</small>
+                            </div>
+                        </div>
+
+                        <div class="execution-line">
+                            <span>3</span>
+                            <div>
+                                <strong>Checkout uses that fixed dependency</strong>
+                                <small>self.payment_processor.pay(49.99)</small>
+                            </div>
+                        </div>
+
+                        <div class="execution-line">
+                            <span>4</span>
+                            <div>
+                                <strong>To use PayPal</strong>
+                                <small>You must edit the service code</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-card bad comparison-code">
+                    <div class="code-title">The problem in code</div>
+                    <pre><code>class TightlyCoupledOrderService:
+    def __init__(self):
+        self.payment_processor = CreditCardPayment()
+
+    def checkout(self, order):
+        self.payment_processor.pay(order.total)</code></pre>
+                </div>
+
+                <div class="problem-summary">
+                    <strong>Why this is a problem</strong>
+                    <div class="problem-points">
+                        <span>✕ Payment choice is hard-coded</span>
+                        <span>✕ Switching providers requires editing OrderService</span>
+                        <span>✕ FakePayment cannot be injected for testing</span>
+                        <span>✕ OrderService has more than one responsibility</span>
+                    </div>
+                </div>
+
+                <div class="stage-footer">
+                    <p>
+                        <strong>Presentation line:</strong>
+                        “This works, but it is tightly coupled. Now we’ll show the same checkout with Dependency Injection.”
+                    </p>
+                    <a class="next-link" href="/with-di">Open Demo B: With DI →</a>
+                </div>
+            </section>
+
+            <aside class="live-system danger-system">
+                <div class="live-header">
+                    <div>
+                        <p class="eyebrow">SYSTEM VIEW</p>
+                        <h2>Without DI</h2>
+                    </div>
+                    <span class="status-badge danger">Fixed</span>
+                </div>
+
+                <div class="system-flow">
+                    <div class="system-node service-node">
+                        <small>Service is created</small>
+                        <strong>TightlyCoupledOrderService</strong>
+                    </div>
+                    <div class="system-arrow">↓</div>
+                    <div class="system-node danger-node">
+                        <small>Creates internally</small>
+                        <strong>CreditCardPayment()</strong>
+                    </div>
+                    <div class="system-arrow">↓</div>
+                    <div class="system-node action-node">
+                        <small>Checkout calls</small>
+                        <strong>CreditCardPayment.pay()</strong>
+                    </div>
+                </div>
+
+                <div class="locked-diagram">
+                    <div class="lock-service">OrderService</div>
+                    <div class="lock-link">LOCKED TO</div>
+                    <div class="lock-payment">CreditCardPayment</div>
+                </div>
+
+                <div class="event-log">
+                    <div class="event-log-header">
+                        <strong>Demo log</strong>
+                        <button id="clear-tight-log">Clear</button>
+                    </div>
+                    <div id="tight-log-lines" class="log-lines">
+                        <div><span>READY</span> Tightly coupled demo loaded.</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='without_di.js') }}"></script>
+</body>
+</html>
