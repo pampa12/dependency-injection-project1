@@ -13,8 +13,40 @@ The program shows how the same `OrderService` can work with different payment me
 - `order_service.py` - contains the order and checkout logic
 - `tightly_coupled_example.py` - shows the version without Dependency Injection
 - `main.py` - runs the console example
-- `ui.py` - runs a simple checkout user interface for the presentation
+- `ui.py` - simple desktop UI
+- `web_app.py` - website-style checkout demo
+- `templates/index.html` - checkout page
+- `static/style.css` - website styling
+- `static/app.js` - checkout interactions
 - `tests/` - contains a unit test
+
+## Run the website checkout demo
+
+Install Flask:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Start the website:
+
+```bash
+python web_app.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5000
+```
+
+The checkout looks like a real online-store checkout and lets you switch between:
+
+- Credit Card
+- PayPal
+- FakePayment
+
+Behind the screen, the selected payment object is created and injected into the same `OrderService`.
 
 ## Run the console example
 
@@ -22,19 +54,11 @@ The program shows how the same `OrderService` can work with different payment me
 python main.py
 ```
 
-## Run the UI demo
+## Run the desktop UI
 
 ```bash
 python ui.py
 ```
-
-The UI lets you choose between:
-
-- Credit Card
-- PayPal
-- FakePayment
-
-The important part is that the same `OrderService` is used each time. Only the payment object that gets injected changes.
 
 ## Run the test
 
