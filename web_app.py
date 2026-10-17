@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 
 from order_service import Order, OrderService
-from payment import CreditCardPayment, FakePayment, PayPalPayment
+from payment import ApplePayPayment, CreditCardPayment, FakePayment, PayPalPayment
 
 app = Flask(__name__)
 
@@ -30,6 +30,11 @@ def checkout():
             email = (data.get("paypal_email") or "student@example.com").strip()
             payment = PayPalPayment(email)
             payment_label = f"PayPal ({email})"
+
+        elif payment_method == "apple_pay":
+            device_name = (data.get("device_name") or "iPhone").strip()
+            payment = ApplePayPayment(device_name)
+            payment_label = f"Apple Pay ({device_name})"
 
         elif payment_method == "fake":
             payment = FakePayment()
