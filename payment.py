@@ -21,6 +21,17 @@ class PayPalPayment:
         return True
 
 
+class ApplePayPayment:
+    def __init__(self, device_name="iPhone"):
+        self.device_name = device_name
+
+    def pay(self, amount):
+        print(
+            f"Paid ${amount:.2f} using Apple Pay on {self.device_name}."
+        )
+        return True
+
+
 class FakePayment:
     def __init__(self):
         self.amounts_paid = []
