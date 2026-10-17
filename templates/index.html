@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Dependency Injection Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="brand">
+            <span class="brand-mark">N</span>
+            <span>Northstar Shop</span>
+        </div>
+        <div class="demo-badge">SE 340 · Dependency Injection Demo</div>
+    </header>
+
+    <main class="page-shell">
+        <div class="checkout-heading">
+            <div>
+                <p class="eyebrow">SECURE CHECKOUT</p>
+                <h1>Complete your order</h1>
+                <p class="subtext">Choose a payment method below. The same OrderService handles every option.</p>
+            </div>
+            <div class="steps" aria-label="Checkout progress">
+                <span class="step muted">Cart</span>
+                <span class="line"></span>
+                <span class="step active">Checkout</span>
+                <span class="line"></span>
+                <span class="step muted">Complete</span>
+            </div>
+        </div>
+
+        <div class="checkout-grid">
+            <section class="checkout-card">
+                <div class="section-header">
+                    <span class="section-number">1</span>
+                    <div>
+                        <h2>Contact</h2>
+                        <p>Where should we send your receipt?</p>
+                    </div>
+                </div>
+
+                <label class="field-label" for="customer-email">Email address</label>
+                <input class="text-input" id="customer-email" type="email" value="student@example.com">
+
+                <div class="divider"></div>
+
+                <div class="section-header">
+                    <span class="section-number">2</span>
+                    <div>
+                        <h2>Payment</h2>
+                        <p>Select the dependency that will be passed into OrderService.</p>
+                    </div>
+                </div>
+
+                <div class="payment-options">
+                    <label class="payment-option selected" data-option="credit_card">
+                        <input type="radio" name="payment" value="credit_card" checked>
+                        <span class="payment-icon">💳</span>
+                        <span>
+                            <strong>Credit card</strong>
+                            <small>Visa, Mastercard, or demo card</small>
+                        </span>
+                        <span class="check-dot"></span>
+                    </label>
+
+                    <div class="payment-details" id="credit-fields">
+                        <label class="field-label" for="card-number">Card number</label>
+                        <div class="card-number-wrap">
+                            <input class="text-input" id="card-number" inputmode="numeric" value="4242 4242 4242 1234">
+                            <span class="card-chip">VISA</span>
+                        </div>
+                        <div class="field-row">
+                            <div>
+                                <label class="field-label" for="expiry">Expiration</label>
+                                <input class="text-input" id="expiry" value="12/29">
+                            </div>
+                            <div>
+                                <label class="field-label" for="cvv">Security code</label>
+                                <input class="text-input" id="cvv" value="123">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="payment-option" data-option="paypal">
+                        <input type="radio" name="payment" value="paypal">
+                        <span class="payment-icon paypal">P</span>
+                        <span>
+                            <strong>PayPal</strong>
+                            <small>Use a PayPal account</small>
+                        </span>
+                        <span class="check-dot"></span>
+                    </label>
+
+                    <div class="payment-details hidden" id="paypal-fields">
+                        <label class="field-label" for="paypal-email">PayPal email</label>
+                        <input class="text-input" id="paypal-email" type="email" value="pampa@example.com">
+                    </div>
+
+                    <label class="payment-option" data-option="fake">
+                        <input type="radio" name="payment" value="fake">
+                        <span class="payment-icon test">T</span>
+                        <span>
+                            <strong>FakePayment</strong>
+                            <small>Test mode — no real payment</small>
+                        </span>
+                        <span class="check-dot"></span>
+                    </label>
+                </div>
+
+                <button class="place-order" id="place-order">
+                    <span>Pay $49.99</span>
+                    <span>→</span>
+                </button>
+
+                <p class="secure-note">🔒 This is a classroom demo. No real payment is processed.</p>
+            </section>
+
+            <aside class="summary-card">
+                <p class="eyebrow">ORDER SUMMARY</p>
+                <div class="product">
+                    <div class="product-image">DI</div>
+                    <div class="product-info">
+                        <strong>Demo Order</strong>
+                        <span>Order #A1001</span>
+                        <span>Qty 1</span>
+                    </div>
+                    <strong>$49.99</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>$49.99</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>USD $49.99</span>
+                </div>
+
+                <div class="di-card">
+                    <p class="eyebrow">WHAT THE DEMO SHOWS</p>
+                    <div class="flow-item"><span>1</span><p>You choose a payment method.</p></div>
+                    <div class="flow-item"><span>2</span><p>That payment object is created outside OrderService.</p></div>
+                    <div class="flow-item"><span>3</span><p>The object is injected into OrderService.</p></div>
+                    <div class="flow-item"><span>4</span><p>OrderService uses it without changing its own code.</p></div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <div class="success-overlay hidden" id="success-overlay">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <p class="eyebrow">ORDER COMPLETE</p>
+            <h2>Payment processed</h2>
+            <p id="success-message"></p>
+            <div class="injection-result">
+                <span>Injected dependency</span>
+                <strong id="injected-class"></strong>
+            </div>
+            <button id="try-again">Try another payment method</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
