@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackrabbits Rule Shop | With Dependency Injection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">J</div>
+            <div>
+                <strong>Jackrabbits Rule Shop</strong>
+                <span>SE 340 · With Dependency Injection</span>
+            </div>
+        </div>
+        <button id="reset-demo" class="ghost-button">Reset demo</button>
+    </header>
+
+    <main class="app-shell">
+        <section class="hero">
+            <p class="eyebrow">FINAL PRESENTATION DEMO</p>
+            <h1>See Dependency Injection happen step by step</h1>
+            <p>
+                We are not only showing the checkout result. This demo shows the problem,
+                the dependency being selected, the injection, the checkout, and the testing benefit.
+            </p>
+        </section>
+
+        <nav class="demo-steps" aria-label="Demo steps">
+            <button class="step-tab active" data-step="1">
+                <span>1</span>
+                <div><strong>The Problem</strong><small>Tight coupling</small></div>
+            </button>
+            <button class="step-tab" data-step="2">
+                <span>2</span>
+                <div><strong>Choose Dependency</strong><small>Pick payment</small></div>
+            </button>
+            <button class="step-tab" data-step="3">
+                <span>3</span>
+                <div><strong>Inject It</strong><small>Pass into service</small></div>
+            </button>
+            <button class="step-tab" data-step="4">
+                <span>4</span>
+                <div><strong>Run Checkout</strong><small>Use the dependency</small></div>
+            </button>
+            <button class="step-tab" data-step="5">
+                <span>5</span>
+                <div><strong>Test & Extend</strong><small>Fake + new provider</small></div>
+            </button>
+        </nav>
+
+        <div class="demo-layout">
+            <section class="demo-stage">
+                <div class="stage-card step-panel active" data-panel="1">
+                    <div class="stage-header">
+                        <div>
+                            <p class="eyebrow">STEP 1</p>
+                            <h2>Start with the problem: tight coupling</h2>
+                        </div>
+                        <span class="status-badge danger">Without DI</span>
+                    </div>
+
+                    <p class="lead">
+                        In the tightly coupled version, OrderService creates CreditCardPayment itself.
+                        That means OrderService is stuck with one payment type.
+                    </p>
+
+                    <div class="compare-grid">
+                        <div class="code-card bad">
+                            <div class="code-title">Tightly coupled</div>
+                            <pre><code>class TightlyCoupledOrderService:
+    def __init__(self):
+        self.payment_processor = CreditCardPayment()</code></pre>
+                            <p>To switch to PayPal, we would have to edit OrderService.</p>
+                        </div>
+
+                        <div class="problem-visual">
+                            <div class="object-box service">OrderService</div>
+                            <div class="locked-arrow">locked to →</div>
+                            <div class="object-box credit">CreditCardPayment</div>
+                            <div class="problem-note">Only one payment choice</div>
+                        </div>
+                    </div>
+
+                    <div class="stage-footer">
+                        <p><strong>What to say:</strong> “This is the problem DI solves. The service is creating its own dependency.”</p>
+                        <button class="next-button" data-next="2">Next: choose a dependency →</button>
+                    </div>
+                </div>
+
+                <div class="stage-card step-panel" data-panel="2">
+                    <div class="stage-header">
+                        <div>
+                            <p class="eyebrow">STEP 2</p>
+                            <h2>Choose the dependency outside OrderService</h2>
+                        </div>
+                        <span class="status-badge">Outside the service</span>
+                    </div>
+
+                    <p class="lead">
+                        Now the payment object is created outside OrderService. Pick one below and watch the live system update.
+                    </p>
+
+                    <div class="payment-grid">
+                        <button class="payment-choice selected" data-method="credit_card">
+                            <span class="choice-icon">CC</span>
+                            <strong>Credit Card</strong>
+                            <small>CreditCardPayment</small>
+                        </button>
+                        <button class="payment-choice" data-method="paypal">
+                            <span class="choice-icon">PP</span>
+                            <strong>PayPal</strong>
+                            <small>PayPalPayment</small>
+                        </button>
+                        <button class="payment-choice" data-method="apple_pay">
+                            <span class="choice-icon">AP</span>
+                            <strong>Apple Pay</strong>
+                            <small>ApplePayPayment</small>
+                            <em>new</em>
+                        </button>
+                        <button class="payment-choice test-choice" data-method="fake">
+                            <span class="choice-icon">TEST</span>
+                            <strong>FakePayment</strong>
+                            <small>Used for testing</small>
+                        </button>
+                    </div>
+
+                    <div class="choice-details">
+                        <span>Selected class</span>
+                        <strong id="selected-class-large">CreditCardPayment</strong>
+                    </div>
+
+                    <div class="stage-footer">
+                        <p><strong>What to say:</strong> “The payment object is chosen outside OrderService. That is important.”</p>
+                        <button class="next-button" data-next="3">Next: inject it →</button>
+                    </div>
+                </div>
+
+                <div class="stage-card step-panel" data-panel="3">
+                    <div class="stage-header">
+                        <div>
+                            <p class="eyebrow">STEP 3</p>
+                            <h2>Inject the payment object into OrderService</h2>
+                        </div>
+                        <span class="status-badge success">Constructor injection</span>
+                    </div>
+
+                    <div class="injection-animation">
+                        <div class="object-box dependency selected-object" id="stage-dependency">CreditCardPayment</div>
+                        <div class="moving-arrow">→</div>
+                        <div class="object-box service-large">
+                            <small>receives dependency</small>
+                            OrderService
+                        </div>
+                    </div>
+
+                    <div class="code-card good">
+                        <div class="code-title">Constructor injection</div>
+                        <pre><code id="constructor-code">payment = CreditCardPayment("1234")
+service = OrderService(payment)</code></pre>
+                    </div>
+
+                    <div class="key-callout">
+                        <strong>This line is the injection:</strong>
+                        <code>OrderService(payment)</code>
+                    </div>
+
+                    <div class="stage-footer">
+                        <p><strong>What to say:</strong> “The dependency is passed into the OrderService constructor instead of being created inside it.”</p>
+                        <button class="next-button" data-next="4">Next: run checkout →</button>
+                    </div>
+                </div>
+
+                <div class="stage-card step-panel" data-panel="4">
+                    <div class="stage-header">
+                        <div>
+                            <p class="eyebrow">STEP 4</p>
+                            <h2>Run the same checkout with different dependencies</h2>
+                        </div>
+                        <span class="status-badge success">Same OrderService</span>
+                    </div>
+
+                    <div class="checkout-demo">
+                        <div class="store-card">
+                            <div class="store-heading">
+                                <div>
+                                    <small>JACKRABBITS RULE SHOP</small>
+                                    <h3>Checkout</h3>
+                                </div>
+                                <span>Order #A1001</span>
+                            </div>
+
+                            <div class="order-item">
+                                <div class="product-thumb">JR</div>
+                                <div>
+                                    <strong>Jackrabbits Hoodie</strong>
+                                    <span>Demo item · Qty 1</span>
+                                </div>
+                                <strong>$49.99</strong>
+                            </div>
+
+                            <div class="checkout-method">
+                                <span>Payment dependency</span>
+                                <strong id="checkout-method-name">CreditCardPayment</strong>
+                            </div>
+
+                            <button id="run-checkout" class="pay-button">Run checkout with CreditCardPayment</button>
+                        </div>
+
+                        <div class="execution-panel">
+                            <p class="eyebrow">LIVE EXECUTION</p>
+                            <div class="execution-line">
+                                <span>1</span>
+                                <div><strong>Create dependency</strong><small id="run-create">CreditCardPayment</small></div>
+                            </div>
+                            <div class="execution-line">
+                                <span>2</span>
+                                <div><strong>Inject into OrderService</strong><small>OrderService(payment)</small></div>
+                            </div>
+                            <div class="execution-line">
+                                <span>3</span>
+                                <div><strong>OrderService calls</strong><small>payment_processor.pay(49.99)</small></div>
+                            </div>
+                            <div class="execution-line">
+                                <span>4</span>
+                                <div><strong>Result</strong><small id="run-result">Waiting to run...</small></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stage-footer">
+                        <p><strong>What to say:</strong> “We can switch payment classes, but OrderService itself does not change.”</p>
+                        <button class="next-button" data-next="5">Next: test and extend →</button>
+                    </div>
+                </div>
+
+                <div class="stage-card step-panel" data-panel="5">
+                    <div class="stage-header">
+                        <div>
+                            <p class="eyebrow">STEP 5</p>
+                            <h2>Show the two biggest benefits: testing and extension</h2>
+                        </div>
+                        <span class="status-badge">Why DI matters</span>
+                    </div>
+
+                    <div class="benefit-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-number">A</div>
+                            <h3>Test without a real payment provider</h3>
+                            <p>Inject FakePayment and verify the amount without charging a card or contacting PayPal.</p>
+                            <pre><code>fake = FakePayment()
+service = OrderService(fake)
+service.checkout(order)</code></pre>
+                            <button id="run-fake-test" class="secondary-button">Run FakePayment test</button>
+                            <div id="fake-test-result" class="mini-result">Not run yet</div>
+                        </div>
+
+                        <div class="benefit-card">
+                            <div class="benefit-number">B</div>
+                            <h3>Add a new payment type</h3>
+                            <p>We added ApplePayPayment without changing the OrderService class.</p>
+                            <pre><code>class ApplePayPayment:
+    def pay(self, amount):
+        ...
+
+service = OrderService(
+    ApplePayPayment()
+)</code></pre>
+                            <button id="use-apple-pay" class="secondary-button">Use ApplePayPayment</button>
+                            <div class="mini-result">OrderService stays untouched</div>
+                        </div>
+                    </div>
+
+                    <div class="final-message">
+                        <strong>Final takeaway</strong>
+                        <span>The dependency changes. OrderService does not.</span>
+                    </div>
+
+                    <div class="stage-footer">
+                        <p><strong>What to say:</strong> “This is why DI is useful in real systems: easier testing and easier replacement of implementations.”</p>
+                        <button id="restart-walkthrough" class="next-button">Run the demo again ↻</button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="live-system">
+                <div class="live-header">
+                    <div>
+                        <p class="eyebrow">LIVE SYSTEM VIEW</p>
+                        <h2>What the program is doing</h2>
+                    </div>
+                    <span class="live-badge"><i></i> LIVE</span>
+                </div>
+
+                <div class="system-flow">
+                    <div class="system-node outside-node">
+                        <small>Outside code creates</small>
+                        <strong id="live-dependency">CreditCardPayment</strong>
+                    </div>
+                    <div class="system-arrow">↓</div>
+                    <div class="system-node injection-node">
+                        <small>Constructor injection</small>
+                        <strong>OrderService(payment)</strong>
+                    </div>
+                    <div class="system-arrow">↓</div>
+                    <div class="system-node service-node">
+                        <small>Service stores</small>
+                        <strong>self.payment_processor</strong>
+                    </div>
+                    <div class="system-arrow">↓</div>
+                    <div class="system-node action-node">
+                        <small>Checkout calls</small>
+                        <strong>payment_processor.pay()</strong>
+                    </div>
+                </div>
+
+                <div class="live-code-block">
+                    <div class="live-code-title">Current code path</div>
+                    <pre><code id="live-code">payment = CreditCardPayment("1234")
+service = OrderService(payment)
+service.checkout(order)</code></pre>
+                </div>
+
+                <div class="event-log">
+                    <div class="event-log-header">
+                        <strong>Demo log</strong>
+                        <button id="clear-log">Clear</button>
+                    </div>
+                    <div id="log-lines" class="log-lines">
+                        <div><span>READY</span> Demo loaded with CreditCardPayment.</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
