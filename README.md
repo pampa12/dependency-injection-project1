@@ -9,7 +9,19 @@ The main idea is that `OrderService` receives a payment object from the outside 
 
 ## Final presentation demo
 
-The website now walks through the pattern step by step:
+The final website now starts with a side-by-side comparison. Demo A shows the same checkout without Dependency Injection, and Demo B shows the improved version with Dependency Injection.
+
+### Demo A - Without Dependency Injection
+
+- Uses `TightlyCoupledOrderService`
+- The service creates `CreditCardPayment()` inside itself
+- Credit Card works
+- Trying to switch to PayPal is blocked because the service is hard-coded
+- Shows why tight coupling is a problem
+
+### Demo B - With Dependency Injection
+
+The DI walkthrough then shows the pattern step by step:
 
 1. **The problem** - shows tight coupling when `OrderService` creates `CreditCardPayment` itself.
 2. **Choose a dependency** - select Credit Card, PayPal, Apple Pay, or FakePayment.
