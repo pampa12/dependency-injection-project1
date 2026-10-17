@@ -3,50 +3,53 @@
 SE 340 - Software Architecture  
 Team T6 - Bitew, Gessese, Guo
 
-This project is a simple example of the Dependency Injection design pattern.
+This project demonstrates the Dependency Injection design pattern with a simple order checkout system.
 
-The program shows how the same `OrderService` can work with different payment methods. The payment method is passed into `OrderService` instead of being created inside the class.
+The main idea is that `OrderService` receives a payment object from the outside instead of creating a specific payment class inside itself.
 
-## Files
+## Final presentation demo
 
-- `payment.py` - contains the payment classes
-- `order_service.py` - contains the order and checkout logic
-- `tightly_coupled_example.py` - shows the version without Dependency Injection
-- `main.py` - runs the console example
-- `ui.py` - simple desktop UI
-- `web_app.py` - website-style checkout demo
-- `templates/index.html` - checkout page
-- `static/style.css` - website styling
-- `static/app.js` - checkout interactions
-- `tests/` - contains a unit test
+The website now walks through the pattern step by step:
 
-## Run the website checkout demo
+1. **The problem** - shows tight coupling when `OrderService` creates `CreditCardPayment` itself.
+2. **Choose a dependency** - select Credit Card, PayPal, Apple Pay, or FakePayment.
+3. **Inject it** - shows the selected object being passed into `OrderService(payment)`.
+4. **Run checkout** - executes the same `OrderService` with the selected payment class.
+5. **Test and extend** - uses `FakePayment` for testing and shows that `ApplePayPayment` can be added without changing `OrderService`.
 
-Install Flask:
+A live system panel also shows the current object, injection path, code path, and event log during the presentation.
+
+## Run the final website demo
+
+Install the dependency:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Start the website:
+Start the Flask app:
 
 ```bash
 python web_app.py
 ```
 
-Then open:
+Open this address in a browser:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-The checkout looks like a real online-store checkout and lets you switch between:
+## Project files
 
-- Credit Card
-- PayPal
-- FakePayment
-
-Behind the screen, the selected payment object is created and injected into the same `OrderService`.
+- `payment.py` - CreditCardPayment, PayPalPayment, ApplePayPayment, and FakePayment
+- `order_service.py` - Order and OrderService
+- `tightly_coupled_example.py` - version without Dependency Injection
+- `web_app.py` - Flask backend for the presentation demo
+- `templates/index.html` - step-by-step demo page
+- `static/style.css` - presentation demo styling
+- `static/app.js` - interactive walkthrough and live execution
+- `main.py` - console example
+- `tests/` - unit test using FakePayment
 
 ## Run the console example
 
@@ -54,14 +57,12 @@ Behind the screen, the selected payment object is created and injected into the 
 python main.py
 ```
 
-## Run the desktop UI
-
-```bash
-python ui.py
-```
-
-## Run the test
+## Run the tests
 
 ```bash
 python -m unittest discover -s tests
 ```
+
+## Key takeaway
+
+The dependency changes, but `OrderService` does not.
