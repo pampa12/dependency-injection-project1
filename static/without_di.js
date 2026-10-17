@@ -4,14 +4,14 @@ const resultBox = document.getElementById("tight-result");
 const logLines = document.getElementById("tight-log-lines");
 const clearLog = document.getElementById("clear-tight-log");
 
-function addLog(type, message) {
+function addLog(message) {
     const line = document.createElement("div");
-    line.innerHTML = "<span>" + type + "</span>" + message;
+    line.textContent = message;
     logLines.appendChild(line);
     logLines.scrollTop = logLines.scrollHeight;
 }
 
-async function runTightCheckout(method) {
+async function runRequest(method) {
     const response = await fetch("/checkout-without-di", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -33,42 +33,42 @@ async function runTightCheckout(method) {
 
 runButton.addEventListener("click", async () => {
     runButton.disabled = true;
-    resultBox.textContent = "Running tightly coupled checkout...";
+    runButton.textContent = "Processing...";
+    resultBox.className = "result-box";
 
-    addLog("CREATE", "TightlyCoupledOrderService created.");
-    addLog("INSIDE", "Service creates CreditCardPayment() by itself.");
-    addLog("CALL", "Checkout calls the fixed CreditCardPayment.");
+    addLog("Created TightlyCoupledOrderService.");
+    addLog("The service created CreditCardPayment() internally.");
+    addLog("Calling checkout().");
 
     try {
-        const data = await runTightCheckout("credit_card");
-        resultBox.textContent =
-            data.message + " " + data.note;
-        resultBox.classList.add("pass");
-        addLog("RESULT", data.message + " using " + data.payment_class + ".");
+        const data = await runRequest("credit_card");
+        resultBox.textContent = data.message + " " + data.note;
+        resultBox.className = "result-box success";
+        addLog("Completed with " + data.payment_class + ".");
     } catch (error) {
         resultBox.textContent = error.message;
-        resultBox.classList.remove("pass");
-        addLog("ERROR", error.message);
+        resultBox.className = "result-box error";
+        addLog("Error: " + error.message);
     } finally {
         runButton.disabled = false;
+        runButton.textContent = "Pay $49.99";
     }
 });
 
 paypalButton.addEventListener("click", async () => {
-    resultBox.textContent = "Trying to switch to PayPal...";
-    resultBox.classList.remove("pass");
-
-    addLog("TRY", "User asks for PayPal.");
+    resultBox.textContent = "Trying PayPal...";
+    resultBox.className = "result-box";
+    addLog("Tried to switch to PayPal.");
 
     try {
-        await runTightCheckout("paypal");
+        await runRequest("paypal");
     } catch (error) {
         resultBox.textContent = error.message;
-        addLog("BLOCKED", "Cannot switch provider without editing the service.");
+        resultBox.className = "result-box error";
+        addLog("Blocked: payment type is hard-coded in the service.");
     }
 });
 
 clearLog.addEventListener("click", () => {
-    logLines.innerHTML = "";
-    addLog("READY", "Log cleared.");
+    logLines.innerHTML = "<div>Ready.</div>";
 });
