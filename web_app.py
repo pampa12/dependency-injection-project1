@@ -2,6 +2,10 @@ from flask import Flask, jsonify, render_template, request
 
 from order_service import Order, OrderService
 from payment import ApplePayPayment, CreditCardPayment, FakePayment, PayPalPayment
+from tightly_coupled_example import (
+    Order as TightlyCoupledOrder,
+    TightlyCoupledOrderService,
+)
 
 app = Flask(__name__)
 
@@ -9,6 +13,53 @@ app = Flask(__name__)
 @app.get("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/without-di")
+def without_di():
+    return render_template("without_di.html")
+
+
+@app.get("/with-di")
+def with_di():
+    return render_template("with_di.html")
+
+
+@app.post("/checkout-without-di")
+def checkout_without_di():
+    data = request.get_json(force=True)
+    requested_method = data.get("payment_method", "credit_card")
+
+    if requested_method != "credit_card":
+        return jsonify(
+            {
+                "ok": False,
+                "message": (
+                    "This version is tightly coupled to CreditCardPayment. "
+                    "To use another provider, the service code must be changed."
+                ),
+            }
+        ), 400
+
+    try:
+        total = float(data.get("total", 49.99))
+        order_id = (data.get("order_id") or "A1001").strip()
+
+        order = TightlyCoupledOrder(order_id, total)
+        service = TightlyCoupledOrderService()
+        result = service.checkout(order)
+
+        return jsonify(
+            {
+                "ok": True,
+                "message": result,
+                "payment_class": service.payment_processor.__class__.__name__,
+                "note": "CreditCardPayment was created inside TightlyCoupledOrderService.",
+            }
+        )
+
+    except (ValueError, RuntimeError) as error:
+        return jsonify({"ok": False, "message": str(error)}), 400
 
 
 @app.post("/checkout")
