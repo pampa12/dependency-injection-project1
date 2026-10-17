@@ -6,10 +6,6 @@ const overlay = document.getElementById("success-overlay");
 const successMessage = document.getElementById("success-message");
 const injectedClass = document.getElementById("injected-class");
 const tryAgain = document.getElementById("try-again");
-const selectedDependencyEl = document.getElementById("selected-dependency");
-const dependencyNameEl = document.getElementById("dependency-name");
-const injectionCodeEl = document.getElementById("injection-code");
-const diExplanationEl = document.getElementById("di-explanation");
 
 const selectedDependency = document.getElementById("selected-dependency");
 const dependencyName = document.getElementById("dependency-name");
@@ -36,42 +32,6 @@ const dependencyDetails = {
 
 function selectedMethod() {
     return document.querySelector('input[name="payment"]:checked').value;
-}
-
-function dependencyInfo(method) {
-    if (method === "paypal") {
-        return {
-            className: "PayPalPayment",
-            setup: "PayPalPayment(...)",
-            explanation: "PayPalPayment is created outside OrderService and injected into it."
-        };
-    }
-
-    if (method === "fake") {
-        return {
-            className: "FakePayment",
-            setup: "FakePayment()",
-            explanation: "FakePayment is injected for testing, so no real provider is needed."
-        };
-    }
-
-    return {
-        className: "CreditCardPayment",
-        setup: "CreditCardPayment(...)",
-        explanation: "CreditCardPayment is created outside OrderService and injected into it."
-    };
-}
-
-function updateDependencyPanel(method) {
-    const info = dependencyInfo(method);
-
-    selectedDependencyEl.textContent = info.className;
-    dependencyNameEl.textContent = info.className;
-    injectionCodeEl.textContent =
-        "payment = " + info.setup + "\n" +
-        "service = OrderService(payment)\n" +
-        "service.checkout(order)";
-    diExplanationEl.textContent = info.explanation;
 }
 
 function updateDependencyPanel(method) {
