@@ -3,98 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jackrabbits Rule Shop | DI Comparison</title>
+    <title>Dependency Injection Demo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-mark">J</div>
-            <div>
-                <strong>Jackrabbits Rule Shop</strong>
-                <span>SE 340 · Final Dependency Injection Comparison</span>
-            </div>
-        </div>
+    <header class="site-header">
+        <a class="store-name" href="/">Jackrabbits Rule Shop</a>
+        <span class="course-name">SE 340 · Dependency Injection Demo</span>
     </header>
 
-    <main class="comparison-shell">
-        <section class="comparison-hero">
-            <p class="eyebrow">FINAL PRESENTATION DEMO</p>
-            <h1>See the difference: without DI vs. with DI</h1>
+    <main class="home">
+        <div class="home-copy">
+            <p class="kicker">FINAL DEMO</p>
+            <h1>Same checkout. Two different designs.</h1>
             <p>
-                Both demos use the same store and the same checkout idea.
-                The difference is how the payment dependency is handled.
+                We built the checkout twice so the difference is easy to see.
+                Start with the hard-coded version, then open the Dependency Injection version.
             </p>
-        </section>
+        </div>
 
-        <section class="comparison-grid">
-            <article class="comparison-card without-card">
-                <div class="comparison-topline">
-                    <span class="status-badge danger">Demo A</span>
-                    <span class="comparison-label">WITHOUT DEPENDENCY INJECTION</span>
+        <div class="version-grid">
+            <a class="version-card" href="/without-di">
+                <div class="version-number">1</div>
+                <div>
+                    <h2>Without Dependency Injection</h2>
+                    <p>OrderService creates its own CreditCardPayment.</p>
                 </div>
-                <h2>Tightly coupled checkout</h2>
-                <p>
-                    The service creates <strong>CreditCardPayment</strong> inside itself.
-                    It works, but it is locked to that payment type.
-                </p>
+                <span class="open-link">Open demo →</span>
+            </a>
 
-                <div class="mini-flow">
-                    <div class="mini-node">OrderService</div>
-                    <div class="mini-arrow danger-text">creates →</div>
-                    <div class="mini-node danger-mini">CreditCardPayment</div>
+            <a class="version-card" href="/with-di">
+                <div class="version-number">2</div>
+                <div>
+                    <h2>With Dependency Injection</h2>
+                    <p>The payment object is passed into OrderService.</p>
                 </div>
+                <span class="open-link">Open demo →</span>
+            </a>
+        </div>
 
-                <div class="comparison-points">
-                    <span>✕ One fixed payment method</span>
-                    <span>✕ Must edit service to switch providers</span>
-                    <span>✕ Harder to test with a fake dependency</span>
-                </div>
-
-                <a class="comparison-button danger-button" href="/without-di">
-                    Open Demo A
-                </a>
-            </article>
-
-            <article class="comparison-card with-card">
-                <div class="comparison-topline">
-                    <span class="status-badge success">Demo B</span>
-                    <span class="comparison-label">WITH DEPENDENCY INJECTION</span>
-                </div>
-                <h2>Flexible checkout</h2>
-                <p>
-                    The payment object is created outside the service and passed into
-                    <strong>OrderService</strong>.
-                </p>
-
-                <div class="mini-flow">
-                    <div class="mini-node good-mini">Payment object</div>
-                    <div class="mini-arrow good-text">inject →</div>
-                    <div class="mini-node">OrderService</div>
-                </div>
-
-                <div class="comparison-points">
-                    <span>✓ Credit Card, PayPal, Apple Pay, or FakePayment</span>
-                    <span>✓ Same OrderService code</span>
-                    <span>✓ Easier testing and extension</span>
-                </div>
-
-                <a class="comparison-button success-button" href="/with-di">
-                    Open Demo B
-                </a>
-            </article>
-        </section>
-
-        <section class="presentation-order">
-            <p class="eyebrow">RECOMMENDED PRESENTATION ORDER</p>
-            <div class="presentation-order-grid">
-                <div><span>1</span><strong>Open Demo A</strong><small>Show the limitation first</small></div>
-                <div><span>2</span><strong>Try PayPal</strong><small>Show that it is locked to Credit Card</small></div>
-                <div><span>3</span><strong>Open Demo B</strong><small>Show the dependency being injected</small></div>
-                <div><span>4</span><strong>Switch payment types</strong><small>Prove OrderService stays the same</small></div>
-                <div><span>5</span><strong>Run FakePayment</strong><small>Finish with the testing benefit</small></div>
-            </div>
-        </section>
+        <p class="home-note">
+            Presentation order: run Version 1 first, try changing the payment method,
+            then show Version 2 and switch between payment classes.
+        </p>
     </main>
 </body>
 </html>
