@@ -1,120 +1,245 @@
-const paymentOptions = document.querySelectorAll(".payment-option");
-const creditFields = document.getElementById("credit-fields");
-const paypalFields = document.getElementById("paypal-fields");
-const orderButton = document.getElementById("place-order");
-const overlay = document.getElementById("success-overlay");
-const successMessage = document.getElementById("success-message");
-const injectedClass = document.getElementById("injected-class");
-const tryAgain = document.getElementById("try-again");
+const stepTabs = document.querySelectorAll(".step-tab");
+const panels = document.querySelectorAll(".step-panel");
+const nextButtons = document.querySelectorAll(".next-button[data-next]");
+const paymentChoices = document.querySelectorAll(".payment-choice");
 
-const selectedDependency = document.getElementById("selected-dependency");
-const dependencyName = document.getElementById("dependency-name");
-const injectionCode = document.getElementById("injection-code");
-const diExplanation = document.getElementById("di-explanation");
+const selectedClassLarge = document.getElementById("selected-class-large");
+const stageDependency = document.getElementById("stage-dependency");
+const constructorCode = document.getElementById("constructor-code");
+const checkoutMethodName = document.getElementById("checkout-method-name");
+const runCreate = document.getElementById("run-create");
+const runResult = document.getElementById("run-result");
 
-const dependencyDetails = {
+const liveDependency = document.getElementById("live-dependency");
+const liveCode = document.getElementById("live-code");
+const logLines = document.getElementById("log-lines");
+
+const runCheckoutButton = document.getElementById("run-checkout");
+const runFakeTestButton = document.getElementById("run-fake-test");
+const fakeTestResult = document.getElementById("fake-test-result");
+const useApplePayButton = document.getElementById("use-apple-pay");
+
+const resetDemoButton = document.getElementById("reset-demo");
+const restartButton = document.getElementById("restart-walkthrough");
+const clearLogButton = document.getElementById("clear-log");
+
+let currentStep = 1;
+let currentMethod = "credit_card";
+
+const methods = {
     credit_card: {
+        label: "Credit Card",
         className: "CreditCardPayment",
-        code: 'payment = CreditCardPayment("1234")\nservice = OrderService(payment)\nservice.checkout(order)',
-        explanation: "CreditCardPayment is created outside OrderService and passed into its constructor."
+        create: 'CreditCardPayment("1234")',
+        payload: {
+            payment_method: "credit_card",
+            card_last_four: "1234"
+        }
     },
     paypal: {
+        label: "PayPal",
         className: "PayPalPayment",
-        code: 'payment = PayPalPayment("pampa@example.com")\nservice = OrderService(payment)\nservice.checkout(order)',
-        explanation: "PayPalPayment is injected instead. OrderService does not need to be rewritten."
+        create: 'PayPalPayment("pampa@example.com")',
+        payload: {
+            payment_method: "paypal",
+            paypal_email: "pampa@example.com"
+        }
+    },
+    apple_pay: {
+        label: "Apple Pay",
+        className: "ApplePayPayment",
+        create: 'ApplePayPayment("iPhone")',
+        payload: {
+            payment_method: "apple_pay",
+            device_name: "iPhone"
+        }
     },
     fake: {
+        label: "FakePayment",
         className: "FakePayment",
-        code: 'payment = FakePayment()\nservice = OrderService(payment)\nservice.checkout(order)',
-        explanation: "FakePayment is injected for testing, so checkout can be tested without a real payment provider."
+        create: "FakePayment()",
+        payload: {
+            payment_method: "fake"
+        }
     }
 };
 
-function selectedMethod() {
-    return document.querySelector('input[name="payment"]:checked').value;
+function addLog(type, message) {
+    const line = document.createElement("div");
+    line.innerHTML = "<span>" + type + "</span>" + message;
+    logLines.appendChild(line);
+    logLines.scrollTop = logLines.scrollHeight;
 }
 
-function updateDependencyPanel(method) {
-    const details = dependencyDetails[method];
-
-    selectedDependency.textContent = details.className;
-    dependencyName.textContent = details.className;
-    injectionCode.textContent = details.code;
-    diExplanation.textContent = details.explanation;
+function codeFor(method) {
+    const info = methods[method];
+    return (
+        "payment = " + info.create + "\n" +
+        "service = OrderService(payment)\n" +
+        "service.checkout(order)"
+    );
 }
 
-function updatePaymentUI() {
-    const method = selectedMethod();
+function setStep(step) {
+    currentStep = Number(step);
 
-    paymentOptions.forEach(option => {
-        const radio = option.querySelector("input");
-        option.classList.toggle("selected", radio.checked);
+    stepTabs.forEach(tab => {
+        tab.classList.toggle("active", Number(tab.dataset.step) === currentStep);
     });
 
-    creditFields.classList.toggle("hidden", method !== "credit_card");
-    paypalFields.classList.toggle("hidden", method !== "paypal");
+    panels.forEach(panel => {
+        panel.classList.toggle("active", Number(panel.dataset.panel) === currentStep);
+    });
 
-    updateDependencyPanel(method);
+    const labels = {
+        1: "Showing tight coupling problem.",
+        2: "Choosing a dependency outside OrderService.",
+        3: "Showing constructor injection.",
+        4: "Ready to execute checkout.",
+        5: "Showing testing and extension benefits."
+    };
+
+    addLog("STEP " + currentStep, labels[currentStep]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-paymentOptions.forEach(option => {
-    option.addEventListener("click", () => {
-        option.querySelector("input").checked = true;
-        updatePaymentUI();
-    });
-});
+function setMethod(method, shouldLog = true) {
+    currentMethod = method;
+    const info = methods[method];
 
-orderButton.addEventListener("click", async () => {
-    const method = selectedMethod();
-    const cardNumber = document.getElementById("card-number").value.replace(/\D/g, "");
-    const paypalEmail = document.getElementById("paypal-email").value.trim();
+    paymentChoices.forEach(choice => {
+        choice.classList.toggle("selected", choice.dataset.method === method);
+    });
+
+    selectedClassLarge.textContent = info.className;
+    stageDependency.textContent = info.className;
+    constructorCode.textContent =
+        "payment = " + info.create + "\n" +
+        "service = OrderService(payment)";
+
+    checkoutMethodName.textContent = info.className;
+    runCreate.textContent = info.className;
+    runResult.textContent = "Waiting to run...";
+
+    liveDependency.textContent = info.className;
+    liveCode.textContent = codeFor(method);
+
+    runCheckoutButton.textContent = "Run checkout with " + info.className;
+
+    if (shouldLog) {
+        addLog("SELECT", info.className + " chosen outside OrderService.");
+    }
+}
+
+async function executeCheckout(method) {
+    const info = methods[method];
 
     const payload = {
         order_id: "A1001",
         total: 49.99,
-        payment_method: method,
-        card_last_four: cardNumber.slice(-4) || "1234",
-        paypal_email: paypalEmail || "student@example.com",
+        ...info.payload
     };
 
-    orderButton.disabled = true;
-    orderButton.firstElementChild.textContent = "Processing...";
+    const response = await fetch("/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+        throw new Error(data.message || "Checkout failed.");
+    }
+
+    return data;
+}
+
+stepTabs.forEach(tab => {
+    tab.addEventListener("click", () => setStep(tab.dataset.step));
+});
+
+nextButtons.forEach(button => {
+    button.addEventListener("click", () => setStep(button.dataset.next));
+});
+
+paymentChoices.forEach(choice => {
+    choice.addEventListener("click", () => setMethod(choice.dataset.method));
+});
+
+runCheckoutButton.addEventListener("click", async () => {
+    const info = methods[currentMethod];
+
+    runCheckoutButton.disabled = true;
+    runCheckoutButton.textContent = "Running...";
+
+    addLog("CREATE", info.className + " object created outside OrderService.");
+    addLog("INJECT", info.className + " passed into OrderService(payment).");
+    addLog("CALL", "OrderService calls payment_processor.pay(49.99).");
 
     try {
-        const response = await fetch("/checkout", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload),
-        });
+        const data = await executeCheckout(currentMethod);
 
-        const data = await response.json();
-
-        if (!response.ok || !data.ok) {
-            throw new Error(data.message || "Checkout failed.");
-        }
-
-        successMessage.textContent =
-            data.message +
-            (data.test_detail ? " " + data.test_detail : "");
-
-        injectedClass.textContent = data.injected_class;
-        overlay.classList.remove("hidden");
+        runResult.textContent = data.message;
+        addLog("RESULT", data.message + " using " + data.injected_class + ".");
     } catch (error) {
-        alert(error.message);
+        runResult.textContent = error.message;
+        addLog("ERROR", error.message);
     } finally {
-        orderButton.disabled = false;
-        orderButton.firstElementChild.textContent = "Pay $49.99";
+        runCheckoutButton.disabled = false;
+        runCheckoutButton.textContent = "Run checkout with " + info.className;
     }
 });
 
-tryAgain.addEventListener("click", () => {
-    overlay.classList.add("hidden");
-});
+runFakeTestButton.addEventListener("click", async () => {
+    fakeTestResult.textContent = "Running test...";
+    fakeTestResult.classList.remove("pass");
 
-overlay.addEventListener("click", event => {
-    if (event.target === overlay) {
-        overlay.classList.add("hidden");
+    addLog("TEST", "Injecting FakePayment instead of a real provider.");
+
+    try {
+        const data = await executeCheckout("fake");
+        fakeTestResult.textContent =
+            "PASS — " + (data.test_detail || "FakePayment completed the test.");
+        fakeTestResult.classList.add("pass");
+        addLog("PASS", data.test_detail || "FakePayment test passed.");
+    } catch (error) {
+        fakeTestResult.textContent = "Test failed — " + error.message;
+        addLog("ERROR", error.message);
     }
 });
 
-updatePaymentUI();
+useApplePayButton.addEventListener("click", () => {
+    setMethod("apple_pay");
+    addLog("EXTEND", "ApplePayPayment added without changing OrderService.");
+    setStep(4);
+});
+
+clearLogButton.addEventListener("click", () => {
+    logLines.innerHTML = "";
+    addLog("READY", "Log cleared.");
+});
+
+function resetDemo() {
+    logLines.innerHTML = "";
+    fakeTestResult.textContent = "Not run yet";
+    fakeTestResult.classList.remove("pass");
+    setMethod("credit_card", false);
+    currentStep = 1;
+
+    stepTabs.forEach(tab => {
+        tab.classList.toggle("active", Number(tab.dataset.step) === 1);
+    });
+
+    panels.forEach(panel => {
+        panel.classList.toggle("active", Number(panel.dataset.panel) === 1);
+    });
+
+    addLog("READY", "Demo reset with CreditCardPayment.");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+resetDemoButton.addEventListener("click", resetDemo);
+restartButton.addEventListener("click", resetDemo);
+
+setMethod("credit_card", false);
