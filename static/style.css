@@ -1320,3 +1320,10 @@ button {
         text-align: center;
     }
 }
+
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
