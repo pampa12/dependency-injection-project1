@@ -7,45 +7,60 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="site-header">
-        <a class="store-name" href="/">Jackrabbits Rule Shop</a>
-        <span class="course-name">SE 340 · Dependency Injection Demo</span>
-    </header>
-
-    <main class="home">
-        <div class="home-copy">
-            <p class="kicker">FINAL DEMO</p>
-            <h1>Same checkout. Two different designs.</h1>
-            <p>
-                We built the checkout twice so the difference is easy to see.
-                Start with the hard-coded version, then open the Dependency Injection version.
-            </p>
-        </div>
-
-        <div class="version-grid">
-            <a class="version-card" href="/without-di">
-                <div class="version-number">1</div>
-                <div>
-                    <h2>Without Dependency Injection</h2>
-                    <p>OrderService creates its own CreditCardPayment.</p>
-                </div>
-                <span class="open-link">Open demo →</span>
-            </a>
-
-            <a class="version-card" href="/with-di">
-                <div class="version-number">2</div>
-                <div>
-                    <h2>With Dependency Injection</h2>
-                    <p>The payment object is passed into OrderService.</p>
-                </div>
-                <span class="open-link">Open demo →</span>
-            </a>
-        </div>
-
-        <p class="home-note">
-            Presentation order: run Version 1 first, try changing the payment method,
-            then show Version 2 and switch between payment classes.
+    <main class="simple-demo">
+        <h1>Dependency Injection Demo</h1>
+        <p class="simple-subtitle">
+            Pick a payment method, then run both versions and compare the result.
         </p>
+
+        <div class="simple-picker">
+            <label for="payment-select">Payment method</label>
+            <select id="payment-select">
+                <option value="credit_card">Credit Card</option>
+                <option value="paypal">PayPal</option>
+            </select>
+        </div>
+
+        <div class="simple-compare">
+            <section class="simple-card">
+                <h2>Without DI</h2>
+                <p class="simple-explain">
+                    OrderService creates CreditCardPayment inside itself.
+                </p>
+
+                <pre><code>self.payment_processor = CreditCardPayment()</code></pre>
+
+                <button id="run-without" class="simple-button">Run without DI</button>
+
+                <div id="without-result" class="simple-result">
+                    Ready.
+                </div>
+            </section>
+
+            <section class="simple-card">
+                <h2>With DI</h2>
+                <p class="simple-explain">
+                    The payment object is created outside and passed into OrderService.
+                </p>
+
+                <pre><code id="with-code">payment = CreditCardPayment("1234")
+service = OrderService(payment)</code></pre>
+
+                <button id="run-with" class="simple-button">Run with DI</button>
+
+                <div id="with-result" class="simple-result">
+                    Ready.
+                </div>
+            </section>
+        </div>
+
+        <div class="simple-bottom">
+            <strong>Main point:</strong>
+            Without DI, changing the payment method means changing OrderService.
+            With DI, we only change the object we pass in.
+        </div>
     </main>
+
+    <script src="{{ url_for('static', filename='comparison.js') }}"></script>
 </body>
 </html>
