@@ -30,6 +30,7 @@
             <select id="compare-payment">
                 <option value="credit_card">Credit Card</option>
                 <option value="paypal">PayPal</option>
+                <option value="apple_pay">Apple Pay</option>
             </select>
         </section>
 
@@ -47,6 +48,22 @@
                 </button>
 
                 <div id="without-di-result" class="compare-result">Ready.</div>
+
+                <div id="without-di-details" class="payment-details-after hidden">
+                    <h3>What happened</h3>
+                    <div class="detail-row">
+                        <span>Payment class</span>
+                        <strong id="without-payment-class">-</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Created</span>
+                        <strong>Inside OrderService</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>OrderService changed?</span>
+                        <strong id="without-service-change">No</strong>
+                    </div>
+                </div>
             </article>
 
             <article class="compare-box">
@@ -63,13 +80,29 @@ service = OrderService(payment)</code></pre>
                 </button>
 
                 <div id="with-di-result" class="compare-result">Ready.</div>
+
+                <div id="with-di-details" class="payment-details-after hidden">
+                    <h3>What happened</h3>
+                    <div class="detail-row">
+                        <span>Injected class</span>
+                        <strong id="with-payment-class">-</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Created</span>
+                        <strong>Outside OrderService</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>OrderService changed?</span>
+                        <strong>No</strong>
+                    </div>
+                </div>
             </article>
         </section>
 
         <section class="simple-takeaway">
             <strong>What to notice:</strong>
-            with Credit Card, both versions work. Switch to PayPal and run both again.
-            The version without DI is stuck on CreditCardPayment, while the DI version accepts PayPalPayment.
+            with Credit Card, both versions work. Then switch to PayPal or Apple Pay and run both again.
+            The version without DI is stuck on CreditCardPayment, while the DI version can accept a different payment class.
         </section>
     </main>
 
