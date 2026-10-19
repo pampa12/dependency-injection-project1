@@ -15,6 +15,11 @@ def index():
     return render_template("index.html")
 
 
+@app.get("/compare-checkout")
+def compare_checkout():
+    return render_template("compare_checkout.html")
+
+
 @app.get("/without-di")
 def without_di():
     return render_template("without_di.html")
