@@ -1061,3 +1061,44 @@ button {
     background: #ffffff;
     padding: 8px;
 }
+
+
+/* Extra result details shown after checkout runs */
+.payment-details-after {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #e1e5ea;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.payment-details-after h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.detail-row {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid #eef0f3;
+    font-size: 12px;
+}
+
+.detail-row:first-of-type {
+    border-top: 0;
+}
+
+.detail-row span {
+    color: #6f7785;
+}
+
+.detail-row strong {
+    text-align: right;
+}
+
+.hidden {
+    display: none !important;
+}
