@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="shop-header">
+        <div>
+            <h1>Jackrabbits Rule Shop</h1>
+            <p>Checkout comparison</p>
+        </div>
+        <a class="back-shop-link" href="/">← Back to shop</a>
+    </header>
+
+    <main class="compare-page">
+        <section class="order-summary-card">
+            <h2>Your order</h2>
+            <div id="checkout-items" class="checkout-items"></div>
+            <div class="checkout-total-row">
+                <span>Total</span>
+                <strong id="checkout-total">$0.00</strong>
+            </div>
+        </section>
+
+        <section class="payment-choice-bar">
+            <label for="compare-payment">Try the same payment method on both versions:</label>
+            <select id="compare-payment">
+                <option value="credit_card">Credit Card</option>
+                <option value="paypal">PayPal</option>
+            </select>
+        </section>
+
+        <section class="compare-grid-simple">
+            <article class="compare-box">
+                <h2>Without DI</h2>
+                <p class="compare-description">
+                    OrderService creates CreditCardPayment inside itself.
+                </p>
+
+                <pre class="compare-code"><code>self.payment_processor = CreditCardPayment()</code></pre>
+
+                <button id="run-without-di" class="compare-run-button">
+                    Run without DI
+                </button>
+
+                <div id="without-di-result" class="compare-result">Ready.</div>
+            </article>
+
+            <article class="compare-box">
+                <h2>With DI</h2>
+                <p class="compare-description">
+                    The payment object is created outside and passed into OrderService.
+                </p>
+
+                <pre class="compare-code"><code id="with-di-code">payment = CreditCardPayment("1234")
+service = OrderService(payment)</code></pre>
+
+                <button id="run-with-di" class="compare-run-button">
+                    Run with DI
+                </button>
+
+                <div id="with-di-result" class="compare-result">Ready.</div>
+            </article>
+        </section>
+
+        <section class="simple-takeaway">
+            <strong>What to notice:</strong>
+            with Credit Card, both versions work. Switch to PayPal and run both again.
+            The version without DI is stuck on CreditCardPayment, while the DI version accepts PayPalPayment.
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='compare_checkout.js') }}"></script>
+</body>
+</html>
