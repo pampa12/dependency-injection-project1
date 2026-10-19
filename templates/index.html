@@ -3,64 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dependency Injection Demo</title>
+    <title>Jackrabbits Rule Shop</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <main class="simple-demo">
-        <h1>Dependency Injection Demo</h1>
-        <p class="simple-subtitle">
-            Pick a payment method, then run both versions and compare the result.
-        </p>
-
-        <div class="simple-picker">
-            <label for="payment-select">Payment method</label>
-            <select id="payment-select">
-                <option value="credit_card">Credit Card</option>
-                <option value="paypal">PayPal</option>
-            </select>
+    <header class="shop-header">
+        <div>
+            <h1>Jackrabbits Rule Shop</h1>
+            <p>Dependency Injection Demo</p>
         </div>
+        <div class="cart-count">
+            Cart: <strong id="cart-count">0</strong>
+        </div>
+    </header>
 
-        <div class="simple-compare">
-            <section class="simple-card">
-                <h2>Without DI</h2>
-                <p class="simple-explain">
-                    OrderService creates CreditCardPayment inside itself.
-                </p>
+    <main class="shop-page">
+        <section class="shop-intro">
+            <h2>Pick a few items</h2>
+            <p>Add anything you want to the cart. At checkout we will run the same order two ways: without DI and with DI.</p>
+        </section>
 
-                <pre><code>self.payment_processor = CreditCardPayment()</code></pre>
-
-                <button id="run-without" class="simple-button">Run without DI</button>
-
-                <div id="without-result" class="simple-result">
-                    Ready.
+        <section class="product-grid">
+            <article class="product-card" data-name="Jackrabbits Hoodie" data-price="49.99">
+                <div class="product-photo hoodie">HOODIE</div>
+                <h3>Jackrabbits Hoodie</h3>
+                <p>Classic campus hoodie</p>
+                <div class="product-footer">
+                    <strong>$49.99</strong>
+                    <button class="add-button">Add to cart</button>
                 </div>
-            </section>
+            </article>
 
-            <section class="simple-card">
-                <h2>With DI</h2>
-                <p class="simple-explain">
-                    The payment object is created outside and passed into OrderService.
-                </p>
-
-                <pre><code id="with-code">payment = CreditCardPayment("1234")
-service = OrderService(payment)</code></pre>
-
-                <button id="run-with" class="simple-button">Run with DI</button>
-
-                <div id="with-result" class="simple-result">
-                    Ready.
+            <article class="product-card" data-name="Jackrabbits T-Shirt" data-price="24.99">
+                <div class="product-photo tshirt">T-SHIRT</div>
+                <h3>Jackrabbits T-Shirt</h3>
+                <p>Everyday campus tee</p>
+                <div class="product-footer">
+                    <strong>$24.99</strong>
+                    <button class="add-button">Add to cart</button>
                 </div>
-            </section>
-        </div>
+            </article>
 
-        <div class="simple-bottom">
-            <strong>Main point:</strong>
-            Without DI, changing the payment method means changing OrderService.
-            With DI, we only change the object we pass in.
-        </div>
+            <article class="product-card" data-name="Jackrabbits Cap" data-price="19.99">
+                <div class="product-photo cap">CAP</div>
+                <h3>Jackrabbits Cap</h3>
+                <p>Adjustable school cap</p>
+                <div class="product-footer">
+                    <strong>$19.99</strong>
+                    <button class="add-button">Add to cart</button>
+                </div>
+            </article>
+
+            <article class="product-card" data-name="Jackrabbits Mug" data-price="14.99">
+                <div class="product-photo mug">MUG</div>
+                <h3>Jackrabbits Mug</h3>
+                <p>Simple coffee mug</p>
+                <div class="product-footer">
+                    <strong>$14.99</strong>
+                    <button class="add-button">Add to cart</button>
+                </div>
+            </article>
+        </section>
+
+        <section class="cart-panel">
+            <div>
+                <h2>Your cart</h2>
+                <div id="cart-items" class="cart-items">
+                    <p class="empty-cart">Your cart is empty.</p>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div>
+                    <span>Total</span>
+                    <strong id="cart-total">$0.00</strong>
+                </div>
+                <button id="checkout-button" class="checkout-button" disabled>
+                    Continue to checkout
+                </button>
+            </div>
+        </section>
     </main>
 
-    <script src="{{ url_for('static', filename='comparison.js') }}"></script>
+    <script src="{{ url_for('static', filename='shop.js') }}"></script>
 </body>
 </html>
