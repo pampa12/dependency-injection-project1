@@ -99,11 +99,6 @@ service = OrderService(payment)</code></pre>
             </article>
         </section>
 
-        <section class="simple-takeaway">
-            <strong>What to notice:</strong>
-            with Credit Card, both versions work. Then switch to PayPal or Apple Pay and run both again.
-            The version without DI is stuck on CreditCardPayment, while the DI version can accept a different payment class.
-        </section>
     </main>
 
     <script src="{{ url_for('static', filename='compare_checkout.js') }}"></script>
